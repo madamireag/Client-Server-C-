@@ -28,12 +28,7 @@ namespace Server
         {
             server.Start();
             Console.WriteLine("Server Started");
-            accept_connection();  //accepts incoming connections
-        }
-
-        private void accept_connection()
-        {
-            server.BeginAcceptTcpClient(handle_connection, server);  //this is called asynchronously and will run in a different thread
+            server.BeginAcceptTcpClient(handle_connection, server);
         }
 
         private static bool IsFileLocked(string filePath)
@@ -54,12 +49,10 @@ namespace Server
             return false;
         }
 
-        private void handle_connection(IAsyncResult result)  //the parameter is a delegate, used to communicate between threads
+        private void handle_connection(IAsyncResult result)  
         {
-          
-
-            accept_connection();  //once again, checking for any other incoming connections
-            TcpClient client = server.EndAcceptTcpClient(result);  //creates the TcpClient
+            server.BeginAcceptTcpClient(handle_connection, server);
+            TcpClient client = server.EndAcceptTcpClient(result);  
 
             string clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
             int clientPort = ((IPEndPoint)client.Client.RemoteEndPoint).Port;
@@ -71,7 +64,7 @@ namespace Server
 
             IConfiguration config = builder.Build();
 
-            string filePath = config["filePath"] ;
+            string filePath = config["filePath"];
             int.TryParse(config["serverTimeout"], out int timeout);
 
 
@@ -107,50 +100,13 @@ namespace Server
 
                         File.WriteAllLines(filePath, remainingLines.ToArray());
 
-                        //using (StreamReader file = new StreamReader(filePath))
-                        //{
-                        //    // citire linie cu linie din fisier
-                        //    string line;
-
-                        //    while ((line = file.ReadLine()) != null)
-                        //    {
-                        //        // ce trebuie sa faca cand citeste mesajele?
-                        //        string[] message = line.Split(" ", StringSplitOptions.None);
-                        //        if (message[message.Length - 1].ToLower().Equals("server"))
-                        //        {
-                        //            // mesajul e pt mine (server), trebuie sa trimit clientului feedback
-                        //            // trimit tot prin fisier sau ii scriu in consola?
-
-                        //            //NetworkStream ns = client.GetStream();
-
-                        //            //byte[] message = new byte[4096];
-                        //            //string clientRequest = "Message received!";
-                        //            //message = Encoding.ASCII.GetBytes(clientRequest);
-                        //            //ns.Write(message, 0, message.Length);
-
-                        //            //sterg mesajul ca sa nu-l citesc de 2 ori
-                        //            string[] linesArr = File.ReadAllLines(filePath);
-                        //            List<string> listOfLines = new List<string>();
-                        //            listOfLines.AddRange(linesArr);
-
-                        //            listOfLines.Remove(line);
-
-                        //            File.WriteAllLines(filePath,listOfLines.ToArray());
-
-                        //        }
-
-
-                        //    }
-                        //    file.Close();
-                        //}
-
-                        Thread.Sleep(timeout);
-
                     }
                     else if (IsFileLocked(filePath))
                     {
                         Console.WriteLine($"The file is locked! Retrying in {timeout / 60000} min");
+
                     }
+                    Thread.Sleep(timeout);
                 }
                 catch (Exception e)
                 {
@@ -158,9 +114,6 @@ namespace Server
                 }
 
             }
-         
-
         }
-
     }
 }

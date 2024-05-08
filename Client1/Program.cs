@@ -15,32 +15,16 @@ namespace Client1
         static void Main(string[] args)
         {
             Connect();
-            //Console.WriteLine("Options:\n 1. Write a message \n 2. Close connection");
-            //Int32.TryParse(Console.ReadLine(), out int option);
-
             LoopPacket();
-            //switch (option)
-            //    {
-            //        case 1: { LoopPacket();
-                            
-            //                break;
-            //            }
-            //        case 2: { tcpclnt.Close();
-            //                  Console.WriteLine("Connection closed!");
-            //                break;
-            //            }
-                
-            //    }
-                
             tcpclnt.Close();
-            }
-        
+        }
+
         private static bool IsFileLocked(string filePath)
         {
             FileStream stream = null;
             try
             {
-                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);  
+                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
                 stream.Close();
             }
             catch (IOException)
@@ -53,17 +37,14 @@ namespace Client1
         private static void LoopPacket()
         {
             byte[] bytesFrom = new byte[4096];
-            string dataFromServer = null;
-            byte[] sendBytes = null;
-            string clientRequest = null;
+            string dataFromServer;
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             IConfiguration config = builder.Build();
 
-            // de adaugat logica sa-i dea de ales daca vrea sa scrie mesaj sau sa se deconecteze
-
-            while (true) { 
+            while (true)
+            {
                 try
                 {
                     string filePath = config["filePath"];
@@ -71,26 +52,23 @@ namespace Client1
 
                     if (File.Exists(filePath) && !IsFileLocked(filePath))
                     {
-                        //using (StreamWriter writer = new StreamWriter(filePath, true))
-                        //{
-                        //    // citesc de la consola ce vreau sa scriu in fisier
-                        //    Console.WriteLine("Write a message:");
-                        //    string input = Console.ReadLine();
+                        using (StreamWriter writer = new StreamWriter(filePath, true))
+                        {
+                            // citesc de la consola ce vreau sa scriu in fisier
+                            Console.WriteLine("Write a message:");
+                            string input = Console.ReadLine();
 
-                        //    //scriu in fisier
-                        //    //if(int.Parse(input) == 0)
-                        //    //    break;
-                        //    writer.WriteLine(input);
+                            //scriu in fisier
+                            //if(int.Parse(input) == 0)
+                            //    break;
+                            writer.WriteLine(input);
 
-                        //    //inchid fisierul/stream-ul
-                        //    writer.Close();
-                        //}
+                            //inchid fisierul/stream-ul
+                            writer.Close();
+                        }
 
-                        // de adaugat citirea ciclica din fisier
+                        // de adaugat citirea ciclica din fisier - mai incolo
                         // cum stiu ca e mesajul pt mine? - convin ca ultimul cuvant e destinatarul
-                        // unde dau message received si message processed?
-                        // ciclu configurabil -> ? 
-                        // cum fac sa nu procesez acelasi mesaj de mai multe ori? -> dupa ce-l citesc din fisier il sterg?
 
                         NetworkStream networkStream = tcpclnt.GetStream();
                         networkStream.Read(bytesFrom, 0, 4096);
@@ -100,15 +78,13 @@ namespace Client1
                         networkStream.Flush();
 
 
-                    } else if (IsFileLocked(filePath))
+                    }
+                    else if (IsFileLocked(filePath))
                     {
                         Console.WriteLine($"The file is locked! Retrying in {timeout / 60000} min");
                     }
 
-
                     Thread.Sleep(timeout);
-
-
                 }
                 catch (Exception ex)
                 {
@@ -116,8 +92,6 @@ namespace Client1
                     Console.WriteLine("Error: " + ex.Message);
                     break;
                 }
-                //Console.WriteLine("Options:\n 1. Write a message \n 2. Close connection");
-                //int option = Int32.Parse(Console.ReadLine());
 
             }
         }
@@ -125,25 +99,20 @@ namespace Client1
         private static void Connect()
         {
             Console.WriteLine("Connecting...");
-            //while (true)
-            //{
-                try
+            try
+            {
+                tcpclnt.Connect(IPAddress.Parse("127.0.0.1"), 9999);
+                if (tcpclnt.Connected)
                 {
-                    tcpclnt.Connect(IPAddress.Parse("127.0.0.1"), 9999);
-                    if (tcpclnt.Connected)
-                    {
-                        Console.WriteLine("Connected!");
-                    }
-                //  break;
+                    Console.WriteLine("Connected!");
                 }
-                catch (Exception ex)
-                {
-                    // Handle connection errors (retry logic, etc.)
-                    Console.WriteLine("Error connecting: " + ex.Message);
-                 //   System.Threading.Thread.Sleep(1000); // Wait before retrying
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error connecting: " + ex.Message);
             }
         }
     }
+}
 
 
