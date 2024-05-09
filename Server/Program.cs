@@ -36,7 +36,7 @@ namespace Server
             FileStream stream = null;
             try
             {
-                stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             }
             catch (IOException)
             {
@@ -77,33 +77,34 @@ namespace Server
                     {
                         string[] linesArr =
                             File.ReadAllLines(filePath);
-                        List<string> listOfLines = new List<string>();
-                        listOfLines.AddRange(linesArr);
-                        List<string> remainingLines = new List<string>();
 
                         //sterg mesajele procesate ca sa nu le citesc de 2 ori si trimit confirmarea clientului
-                        foreach (string l in listOfLines)
+                        foreach (string l in linesArr)
                         {
                             string[] message = l.Split(" ", StringSplitOptions.None);
                             if (message[message.Length - 1].ToLower().Equals("server"))
                             {
+                                //sterg din array mesajul
+                               
                                 // ii trimit confirmare clientului 
                                 NetworkStream ns = client.GetStream();
                                 byte[] messageInBytes = new byte[4096];
                                 messageInBytes = Encoding.ASCII.GetBytes("Message received and processed!");
                                 ns.Write(messageInBytes, 0, messageInBytes.Length);
                                 //scriu ce mesaje am primit
-                                Console.WriteLine($"Message received: {l}");
+                                Console.WriteLine($"Message received: {l}");  
+                                //scriu restul liniilor inapoi
+                                File.WriteAllLines(filePath, linesArr);
                             }
-                            else { remainingLines.Add(l); }
+                          
                         }
 
-                        File.WriteAllLines(filePath, remainingLines.ToArray());
+         
 
                     }
                     else if (IsFileLocked(filePath))
                     {
-                        Console.WriteLine($"The file is locked! Retrying in {timeout / 60000} min");
+                        Console.WriteLine($"The file is locked! Retrying in {timeout / 1000} seconds");
 
                     }
                     Thread.Sleep(timeout);
