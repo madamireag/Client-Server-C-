@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Client1
+namespace Client2
 {
     class Program
     {
@@ -29,8 +29,8 @@ namespace Client1
 
                 //scriu in fisier
                 int.TryParse(input, out int val);
-              
-                writer.WriteLine("Client1 " + input);
+
+                writer.WriteLine("Client2 " + input);
 
                 //inchid fisierul/stream-ul
                 writer.Close();
@@ -52,6 +52,11 @@ namespace Client1
 
             return false;
         }
+
+        private static void ReadFromFile(string filePath)
+        {
+
+        }
         private static void LoopPacket()
         {
             var builder = new ConfigurationBuilder();
@@ -72,6 +77,7 @@ namespace Client1
                         ReadMessageFromConsoleAndWriteInFile(filePath);
 
                         // de adaugat citirea ciclica din fisier + trimitere confirmare mesaje primite - mai incolo
+                        ReadFromFile(filePath);
 
                         NetworkStream networkStream = tcpclnt.GetStream();
                         byte[] bytesFrom = new byte[4096];
@@ -118,5 +124,3 @@ namespace Client1
         }
     }
 }
-
-

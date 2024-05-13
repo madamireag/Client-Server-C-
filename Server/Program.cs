@@ -76,30 +76,29 @@ namespace Server
                     if (File.Exists(filePath) && !IsFileLocked(filePath))
                     {
                         string[] linesArr =
-                            File.ReadAllLines(filePath);
+                           File.ReadAllLines(filePath);
+                        List<string> listOfLines = new List<string>();
+                        listOfLines.AddRange(linesArr);
 
                         //sterg mesajele procesate ca sa nu le citesc de 2 ori si trimit confirmarea clientului
-                        foreach (string l in linesArr)
+                        for ( int i = 0; i < listOfLines.Count;i++)
                         {
-                            string[] message = l.Split(" ", StringSplitOptions.None);
+                            string[] message = listOfLines[i].Split(" ", StringSplitOptions.None);
                             if (message[message.Length - 1].ToLower().Equals("server"))
                             {
-                                //sterg din array mesajul
-                               
                                 // ii trimit confirmare clientului 
                                 NetworkStream ns = client.GetStream();
                                 byte[] messageInBytes = new byte[4096];
-                                messageInBytes = Encoding.ASCII.GetBytes("Message received and processed!");
+                                messageInBytes = Encoding.ASCII.GetBytes($"{listOfLines[i]} Message received and processed!");
                                 ns.Write(messageInBytes, 0, messageInBytes.Length);
                                 //scriu ce mesaje am primit
-                                Console.WriteLine($"Message received: {l}");  
-                                //scriu restul liniilor inapoi
-                                File.WriteAllLines(filePath, linesArr);
+                                Console.WriteLine($"Message received: {listOfLines[i]}");
+                                listOfLines.Remove(listOfLines[i]);
                             }
                           
                         }
 
-         
+                        File.WriteAllLines(filePath, listOfLines.ToArray());
 
                     }
                     else if (IsFileLocked(filePath))
