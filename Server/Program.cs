@@ -68,7 +68,6 @@ namespace Server
             int.TryParse(config["serverTimeout"], out int timeout);
 
 
-            // de adaugat aici citit la ciclul configurat
             while (true)
             {
                 try
@@ -86,20 +85,24 @@ namespace Server
                             string[] message = listOfLines[i].Split(" ", StringSplitOptions.None);
                             if (message[message.Length - 1].ToLower().Equals("server"))
                             {
-                                // ii trimit confirmare clientului 
-                                NetworkStream ns = client.GetStream();
-                                byte[] messageInBytes = new byte[4096];
-                                messageInBytes = Encoding.ASCII.GetBytes($"{listOfLines[i]} Message received and processed!");
-                                ns.Write(messageInBytes, 0, messageInBytes.Length);
+                                //find out who sent me the message
+                                string sender = message[0];
+
+                                //// ii trimit confirmare clientului 
+                                //NetworkStream ns = client.GetStream();
+                                //byte[] messageInBytes = new byte[4096];
+                                //messageInBytes = Encoding.ASCII.GetBytes("Message received and processed!");
+                                //ns.Write(messageInBytes, 0, messageInBytes.Length);
+
                                 //scriu ce mesaje am primit
                                 Console.WriteLine($"Message received: {listOfLines[i]}");
                                 listOfLines.Remove(listOfLines[i]);
+                                //write the confirmation message in the file
+                                listOfLines.Add("Server " + " Message received and processed! " + sender);
                             }
-                          
                         }
 
                         File.WriteAllLines(filePath, listOfLines.ToArray());
-
                     }
                     else if (IsFileLocked(filePath))
                     {

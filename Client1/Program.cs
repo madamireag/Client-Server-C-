@@ -71,7 +71,7 @@ namespace Client1
                     {
                         ReadMessageFromConsoleAndWriteInFile(filePath);
 
-                        // de adaugat citirea ciclica din fisier + trimitere confirmare mesaje primite - mai incolo
+                        // de adaugat citirea ciclica din fisier + trimitere confirmare mesaje primite prin fisier
 
                         NetworkStream networkStream = tcpclnt.GetStream();
                         byte[] bytesFrom = new byte[4096];
