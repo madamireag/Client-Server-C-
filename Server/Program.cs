@@ -82,23 +82,23 @@ namespace Server
                         //sterg mesajele procesate ca sa nu le citesc de 2 ori si trimit confirmarea clientului
                         for ( int i = 0; i < listOfLines.Count;i++)
                         {
-                            string[] message = listOfLines[i].Split(" ", StringSplitOptions.None);
-                            if (message[message.Length - 1].ToLower().Equals("server"))
+                            string[] wholeMessage = listOfLines[i].Split(" ", StringSplitOptions.None);
+                            string recipient = wholeMessage[wholeMessage.Length - 1];
+                            if (recipient.ToLower().Equals("server"))
                             {
                                 //find out who sent me the message
-                                string sender = message[0];
+                                string sender = wholeMessage[0];
 
-                                //// ii trimit confirmare clientului 
-                                //NetworkStream ns = client.GetStream();
-                                //byte[] messageInBytes = new byte[4096];
-                                //messageInBytes = Encoding.ASCII.GetBytes("Message received and processed!");
-                                //ns.Write(messageInBytes, 0, messageInBytes.Length);
+                                string actualMessage = listOfLines[i].Substring(sender.Length + 1, listOfLines[i].Length - (sender.Length + 1) - (recipient.Length + 1));
 
                                 //scriu ce mesaje am primit
-                                Console.WriteLine($"Message received: {listOfLines[i]}");
+                                Console.WriteLine($"Message received from {sender}: {actualMessage}");
+
+                                // delete the message cause i already processed it
                                 listOfLines.Remove(listOfLines[i]);
                                 //write the confirmation message in the file
-                                listOfLines.Add("Server " + " Message received and processed! " + sender);
+                                if (actualMessage.ToLower() != "message received and processed!")
+                                    listOfLines.Add("Server " + "Message received and processed! " + sender);
                             }
                         }
 

@@ -1,5 +1,0 @@
-Server  Message received and processed! Client2
-Server  Message received and processed! Client2
-Client2  Message received and processed! Server
-Server  Message received and processed! Client2
-Server  Message received and processed! Client2

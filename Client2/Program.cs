@@ -69,7 +69,7 @@ namespace Client2
                     //find out who's it from
                     string sender = wholeMessage[0];
 
-                    // get only the message (without first word - sender and last word recipient)
+                    // get only the message (without first word - sender and last word - recipient)
                     string actualMessage = listOfLines[i].Substring(sender.Length + 1, listOfLines[i].Length - (sender.Length + 1) - (recipient.Length + 1));
 
                     // write what i received
@@ -79,7 +79,8 @@ namespace Client2
                     listOfLines.Remove(listOfLines[i]);
 
                     //write the confirmation message in the file
-                    listOfLines.Add("Client2 " + " Message received and processed! " + sender);
+                    if (actualMessage.ToLower() != "message received and processed!")
+                        listOfLines.Add("Client2 " + " Message received and processed! " + sender);
                 }
             }
             File.WriteAllLines(filePath, listOfLines.ToArray());
@@ -109,16 +110,6 @@ namespace Client2
                             Thread.CurrentThread.IsBackground = true;
                             ReadFromFile(filePath);
                         }).Start();
-
-                       
-
-                        //NetworkStream networkStream = tcpclnt.GetStream();
-                        //byte[] bytesFrom = new byte[4096];
-                        //networkStream.Read(bytesFrom, 0, 4096);
-                        //string dataFromServer = Encoding.ASCII.GetString(bytesFrom);
-                        //dataFromServer = dataFromServer.Substring(0, dataFromServer.IndexOf("\0"));
-                        //Console.WriteLine("Server: " + dataFromServer);
-                        //networkStream.Flush();
 
                     }
                     else if (IsFileLocked(filePath))
