@@ -7,7 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client1", "Client1\Client1.csproj", "{8F58A2C9-3473-47BE-AE0B-C977FACD18F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client2", "Client2\Client2.csproj", "{3B9C18C2-A95F-4E68-8CBB-F5DE2956508C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client2", "Client2\Client2.csproj", "{3B9C18C2-A95F-4E68-8CBB-F5DE2956508C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8F58A2C9-3473-47BE-AE0B-C977FACD18F0} = {8F58A2C9-3473-47BE-AE0B-C977FACD18F0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
